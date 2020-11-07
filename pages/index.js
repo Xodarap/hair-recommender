@@ -6,6 +6,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import DataTable from '../components/data_table'
+import Instructions from '../components/instructions'
+import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles(theme => ({
   optionalColumn: {
@@ -63,13 +65,15 @@ export default function Home() {
         <Typography variant="h5" align="center" color="textSecondary" component="p">
           Do hair good
       </Typography>
-      </div>
       <Container maxWidth="sm">
+        <Paper>
+        <Instructions />
         <DropzoneArea
           onChange={imgWithPreview.bind(this)}
           filesLimit={1}
           maxFileSize={10000000}
         />
+        </Paper>
       </Container>
       <Container maxWidth="sm" >
         <Grid container justify="center" className={classes.loadingHolder}>
@@ -78,6 +82,7 @@ export default function Home() {
         <canvas id="myCanvas" style={{ maxWidth: '100%' }}></canvas>
         <DataTable locations={results.locations} classes={classes} />
       </Container>
+      </div>
     </>
   )
 }
