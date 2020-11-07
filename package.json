@@ -8,8 +8,14 @@
     "start": "next start"
   },
   "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "formidable-serverless": "^1.0.3",
+    "konva": "^7.1.4",
+    "material-ui-dropzone": "^3.5.0",
     "next": "^10.0.0",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "react-konva": "^17.0.0-0"
   }
 }
