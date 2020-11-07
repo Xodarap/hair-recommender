@@ -13,7 +13,7 @@ export default function Instructions() {
     return (
     <Container className={classes.root}>
         <Typography component="p" variant="body1" align="center" color="textPrimary" gutterBottom>
-            Upload a picture of yourself in a neutral position, facing straight towards the camera for best results
+            Upload a picture of yourself with a neutral expression and facing straight towards the camera for best results
         </Typography>
     </Container>)
 }
