@@ -1,18 +1,11 @@
 import { DropzoneArea } from 'material-ui-dropzone'
 import { Container } from '@material-ui/core'
 import { useState } from 'react'
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles  } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Advice from '../components/advice'
+import DataTable from '../components/data_table'
 
 const useStyles = makeStyles(theme => ({
   optionalColumn: {
@@ -41,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Home({url}) {
+export default function Home() {
   const classes = useStyles();
   const [results, setResults] = useState({})
   const imgWithPreview = (files) => {
@@ -54,125 +47,53 @@ export default function Home({url}) {
       var canvas = document.getElementById('myCanvas')
       canvas.width = img.width;
       canvas.height = img.height;
+      resizeCanvas(canvas)
       var ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      handleChange(files, setResults);
     }
     reader.readAsDataURL(files[0]);
-    handleChange(files, setResults, url);
   }
   return (
     <>
-    <Container component="main" className={classes.firstHero}>
-      <Typography component="h1" variant="h1" align="center" color="textPrimary" gutterBottom>
-        Hair 
+      <div className={classes.firstHero}>
+        <Typography component="h1" variant="h1" align="center" color="textPrimary" gutterBottom>
+          Hair
       </Typography>
-      <Typography variant="h5" align="center" color="textSecondary" component="p">
-        Do hair good
+        <Typography variant="h5" align="center" color="textSecondary" component="p">
+          Do hair good
       </Typography>
-    </Container>
+      </div>
       <Container maxWidth="sm">
         <DropzoneArea
           onChange={imgWithPreview.bind(this)}
           filesLimit={1}
-          maxFileSize={2000000}
+          maxFileSize={10000000}
         />
       </Container>
       <Container maxWidth="sm" >
         <Grid container justify="center" className={classes.loadingHolder}>
-          {(results?.loading || true) && <CircularProgress />}
+          {(results?.loading) && <CircularProgress />}
         </Grid>
         <canvas id="myCanvas" style={{ maxWidth: '100%' }}></canvas>
-        <DataTable locations={results.locations} classes={classes}/>
+        <DataTable locations={results.locations} classes={classes} />
       </Container>
     </>
   )
 }
 
-const DataTable = ({locations, classes }) => {
-  if(!locations) return <></>;
-  const calculateDistance = (row) => {
-    const v = ((row.start.x - row.end.x) ** 2 + (row.start.y - row.end.y) ** 2) ** (1/2)
-    return v
+function resizeCanvas(canvas) {
+  const MAX_WIDTH = 1024;
+  const MAX_HEIGHT = 1024;
+  if(canvas.width > MAX_WIDTH) {
+    canvas.height = canvas.height * MAX_WIDTH / canvas.width
+    canvas.width = MAX_WIDTH
   }
-  const distances = locations.reduce((d, row) => {
-    d[row.name] = {
-      distance: calculateDistance(row),
-      start: row.start,
-      end: row.end
-    }
-    return d;
-  }, {})
-  distances['Bigonial (Jaw) Width'].comparison = {
-    to: 'Bizygomatic (Cheek) Width', 
-    relative: distances['Bigonial (Jaw) Width'].distance / distances['Bizygomatic (Cheek) Width'].distance,
-    target: 0.75
-  }  
-  distances['Temporal (Forehead) Width'].comparison = {
-    to: 'Bizygomatic (Cheek) Width', 
-    relative: distances['Temporal (Forehead) Width'].distance / distances['Bizygomatic (Cheek) Width'].distance,
-    target: 0.82
-  } 
-  const thirds = ['Lower', 'Middle', 'Upper']
-  const totalHeight = thirds.reduce((ac, r) => ac + distances[r + ' Third'].distance, 0)
-
-  thirds.forEach(r => {
-    distances[r + ' Third'].comparison = {
-      to: 'total face height',
-      relative: distances[r + ' Third'].distance/totalHeight,
-      target: 0.33
-    }
-  })
-
-  distances['Face Height'] = {
-    distance: totalHeight,
-    comparison: {
-      to: 'Bizygomatic (Cheek) Width',
-      relative: totalHeight/distances['Bizygomatic (Cheek) Width'].distance,
-      target: 1.618
-    }
+  if(canvas.height > MAX_HEIGHT) {
+    canvas.width = canvas.width * MAX_HEIGHT / canvas.height
+    canvas.height = MAX_WIDTH
   }
-
-  const Comparison = ({comparison, name}) => {
-    if(!comparison) return <></>;
-    return <>
-      Your {name} is {(comparison.relative * 100).toLocaleString(undefined, {maximumFractionDigits: 0})}% of
-      your {comparison.to}. The ideal ratio is {comparison.target * 100}%.
-    </>
-  }
-  return <><TableContainer component={Paper}>
-      <Table aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Distance</TableCell>
-            <TableCell className={classes.optionalColumn}>%</TableCell>            
-            <TableCell className={classes.optionalColumn}>Ideal</TableCell>
-            <TableCell>Comparison</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {Object.keys(distances).map((k) => (
-            <TableRow key={k}>
-              <TableCell component="th" scope="row">
-                {k}
-              </TableCell>
-              <TableCell>
-                {distances[k].distance.toLocaleString(undefined, {maximumFractionDigits: 0})} px
-              </TableCell>
-              <TableCell className={classes.optionalColumn}>{distances[k].comparison && (100 *distances[k].comparison?.relative)?.toLocaleString(undefined, {maximumFractionDigits: 0})}</TableCell>
-              <TableCell className={classes.optionalColumn}>{distances[k].comparison && (100 *distances[k].comparison?.target)?.toLocaleString(undefined, {maximumFractionDigits: 0})}</TableCell>
-              <TableCell>
-                <Comparison name={k} comparison={distances[k].comparison} />
-              </TableCell>              
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-    <Advice distances={distances}/>
-    </>
 }
-
 
 var drawLine = function (canvas, ctx, start, end, color) {
   ctx.beginPath();
@@ -183,17 +104,25 @@ var drawLine = function (canvas, ctx, start, end, color) {
   ctx.stroke();
 }
 
-async function handleChange(files, setState, url) {
+async function handleChange(files, setState) {
   if (!files || files.length == 0) return;
 
-  const formData = new FormData()
-  formData.append('image_file', files[0])
-  const r = await fetch(url,
-    {
-      method: 'POST',
-      body: formData
-    }).then(r => r.json())
   var canvas = document.getElementById('myCanvas')
+  var urlencoded = new URLSearchParams();
+  urlencoded.append("image_base64", canvas.toDataURL('image/jpeg'))
+
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+  const r = await fetch('/api/face',
+    {
+      headers: myHeaders,
+      method: 'POST',
+      body: urlencoded,
+      redirect: 'follow'
+    }
+    ).then(r => r.json())
+  
   var ctx = canvas.getContext("2d");
   const landmarks = {
     'Bizygomatic (Cheek) Width': {
@@ -205,10 +134,7 @@ async function handleChange(files, setState, url) {
       color: 'green'
     },
     'Temporal (Forehead) Width': {
-      location: (r) => 
-      [r.face.landmark.left_eyebrow.left_eyebrow_5, r.face.landmark.right_eyebrow.right_eyebrow_5],
-      /*[{x: r.face.landmark.right_eyebrow.right_eyebrow_0.x, y: r.face.landmark.face.face_hairline_114.y},
-        {x: r.face.landmark.left_eyebrow.left_eyebrow_0.x, y: r.face.landmark.face.face_hairline_30.y}],*/
+      location: (r) => [r.face.landmark.left_eyebrow.left_eyebrow_5, r.face.landmark.right_eyebrow.right_eyebrow_5],
       color: 'blue'
     },
     'Lower Third': {
@@ -230,10 +156,10 @@ async function handleChange(files, setState, url) {
   const locations = Object.keys(landmarks).map(k => {
     const [f, s] = landmarks[k].location(r);
     drawLine(canvas, ctx, f, s, landmarks[k].color)
-    if(landmarks[k].flared){
+    if (landmarks[k].flared) {
       const d = canvas.width * 0.06
-      drawLine(canvas, ctx, {x: f.x - d, y: f.y}, {x: f.x + d, y: f.y}, landmarks[k].color)
-      drawLine(canvas, ctx, {x: s.x - d, y: s.y}, {x: s.x + d, y: s.y}, landmarks[k].color)
+      drawLine(canvas, ctx, { x: f.x - d, y: f.y }, { x: f.x + d, y: f.y }, landmarks[k].color)
+      drawLine(canvas, ctx, { x: s.x - d, y: s.y }, { x: s.x + d, y: s.y }, landmarks[k].color)
     }
     return {
       'name': k,
@@ -241,17 +167,5 @@ async function handleChange(files, setState, url) {
       'end': s
     }
   })
-  setState({locations})
-}
-
-export async function getStaticProps() {
-  return {
-    props: {
-      url: 'https://api-us.faceplusplus.com/facepp/v1/face/thousandlandmark?api_key=' +
-       process.env.FACE_KEY +
-       '&api_secret=' +
-       process.env.FACE_SECRET+
-       '&return_landmark=all',
-    },
-  }
+  setState({ locations })
 }
