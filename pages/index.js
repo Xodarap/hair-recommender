@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
   },
   firstHero: {
     width: '100vw',
-    height: '80vh',
+    minHeight: '80vh',
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -72,6 +72,7 @@ export default function Home() {
           onChange={imgWithPreview.bind(this)}
           filesLimit={1}
           maxFileSize={10000000}
+          showPreviews={false}
         />
         </Paper>
       </Container>
