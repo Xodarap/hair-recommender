@@ -6,10 +6,17 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 
+const useStyles = makeStyles(theme => ({
+  whiteText: {
+    color: theme.palette.primary.contrastText,
+  },
+}));
 export default function Advice({distances}) {
+  const classes = useStyles();
     return <>
-    <Typography component="h2" variant="h2" align="center" color="textPrimary" gutterBottom>
+    <Typography component="h2" variant="h2" align="center" color="textPrimary" gutterBottom  className={classes.whiteText}>
     Advice 
     </Typography>
       <TableContainer component={Paper}>
@@ -45,15 +52,15 @@ export default function Advice({distances}) {
                   Forehead Width
                 </TableCell>
                 <TableCell>
-                  {distances['Temporal (Forehead) Width'].comparison.relative < 111/140 ? 
-                    <span>Your forehead width is smaller than the ideal. Consider hair styles which
-                      are short on the sides to exaggerate the width of your forehead.
+                  {distances['Biocular (Eye) Width'].comparison.proportion < 0.9 ? 
+                    <span>Your biocular width is smaller than the ideal. Consider hair styles which
+                      are long on the sides to make it seem wider.
                     </span>  
-                    : distances['Temporal (Forehead) Width'].comparison.relative > 121/140 ? 
-                    <span>Your forehead width is larger than the ideal. Consider hair styles which
-                      are long on the sides to make it seem smaller.
+                    : distances['Biocular (Eye) Width'].comparison.proportion > 1.1 ? 
+                    <span>Your biocular width is larger than the ideal. Consider hair styles which
+                      are short on the sides to make it seem smaller.
                     </span> 
-                    :  <span>Your forehead width is close to the ideal. You can wear hairstyles
+                    :  <span>Your biocular width is close to the ideal. You can wear hairstyles
                       with either long or short sides
                   </span> 
                 }
@@ -64,11 +71,11 @@ export default function Advice({distances}) {
                   Face Height:Width
                 </TableCell>
                 <TableCell>
-                  {distances['Face Height'].comparison.relative < 1.5 ? 
+                  {distances['Face Height'].comparison.proportion < 0.9 ? 
                     <span>Your face is shorter than the ideal. Consider hairstyles that are large
                       on the top and short on the sides to make it seem taller.
                     </span>  
-                    : distances['Temporal (Forehead) Width'].comparison.relative > 1.7 ? 
+                    : distances['Face Height'].comparison.proportion > 1.1 ? 
                     <span>Your face is taller than the ideal. Consider hairstyles that are short
                     on the top and long on the sides to make it seem taller.
                     </span> 

@@ -1,5 +1,5 @@
 import { DropzoneArea } from 'material-ui-dropzone'
-import { Container } from '@material-ui/core'
+import { Container, FormControl, Select, MenuItem, FormHelperText } from '@material-ui/core'
 import { useState } from 'react'
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -28,17 +28,25 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    backgroundImage: "url('/img/bg.jpg')",
+    backgroundImage: "url('/img/hair3.jpg')",
     backgroundSize: 'cover',
   },
   loadingHolder: {
     padding: '20px'
-  }
+  },
+  whiteText: {
+    color: theme.palette.primary.contrastText,
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
 }));
 
 export default function Home() {
   const classes = useStyles();
   const [results, setResults] = useState({})
+  const [sex, setSex] = useState("female")
   const imgWithPreview = (files) => {
     if (!files || files.length == 0) return;
     var reader = new FileReader();
@@ -59,30 +67,39 @@ export default function Home() {
   return (
     <>
       <div className={classes.firstHero}>
-        <Typography component="h1" variant="h1" align="center" color="textPrimary" gutterBottom>
-          Hair
+        <Typography component="h1" variant="h1" align="center" color="textPrimary" gutterBottom className={classes.whiteText}>
+          Hair to Help Us
       </Typography>
-        <Typography variant="h5" align="center" color="textSecondary" component="p">
-          Do hair good
+        <Typography variant="h5" align="center" color="textSecondary" component="p" className={classes.whiteText}>
+          do hair good
       </Typography>
-      <Container maxWidth="sm">
-        <Paper>
-        <Instructions />
-        <DropzoneArea
-          onChange={imgWithPreview.bind(this)}
-          filesLimit={1}
-          maxFileSize={10000000}
-          showPreviews={false}
-        />
-        </Paper>
-      </Container>
-      <Container maxWidth="sm" >
-        <Grid container justify="center" className={classes.loadingHolder}>
-          {(results?.loading) && <CircularProgress />}
-        </Grid>
-        <canvas id="myCanvas" style={{ maxWidth: '100%' }}></canvas>
-        <DataTable locations={results.locations} classes={classes} />
-      </Container>
+        <Container maxWidth="sm">
+          <Paper>
+            <Instructions />
+            <Grid container justify="center" className={classes.loadingHolder}>
+            <FormControl className={classes.formControl}>
+              <Select labelId="demo-simple-select-label" id="demo-simple-select" value={sex} onChange={(e) => { setSex(e.target.value) }}           >
+                <MenuItem value="female">Female</MenuItem>
+                <MenuItem value="male">Male</MenuItem>
+              </Select>
+              <FormHelperText>Used to determine "ideal" proportions</FormHelperText>
+            </FormControl>
+            </Grid>
+            <DropzoneArea
+              onChange={imgWithPreview.bind(this)}
+              filesLimit={1}
+              maxFileSize={10000000}
+              showPreviews={false}
+            />
+          </Paper>
+        </Container>
+        <Container maxWidth="sm" >
+          <Grid container justify="center" className={classes.loadingHolder}>
+            {(results?.loading) && <CircularProgress />}
+          </Grid>
+          <canvas id="myCanvas" style={{ maxWidth: '100%' }}></canvas>
+          <DataTable locations={results.locations} classes={classes} sex={sex}/>
+        </Container>
       </div>
     </>
   )
@@ -91,11 +108,11 @@ export default function Home() {
 function resizeCanvas(canvas) {
   const MAX_WIDTH = 1024;
   const MAX_HEIGHT = 1024;
-  if(canvas.width > MAX_WIDTH) {
+  if (canvas.width > MAX_WIDTH) {
     canvas.height = canvas.height * MAX_WIDTH / canvas.width
     canvas.width = MAX_WIDTH
   }
-  if(canvas.height > MAX_HEIGHT) {
+  if (canvas.height > MAX_HEIGHT) {
     canvas.width = canvas.width * MAX_HEIGHT / canvas.height
     canvas.height = MAX_WIDTH
   }
@@ -127,8 +144,8 @@ async function handleChange(files, setState) {
       body: urlencoded,
       redirect: 'follow'
     }
-    ).then(r => r.json())
-  
+  ).then(r => r.json())
+
   var ctx = canvas.getContext("2d");
   const landmarks = {
     'Bizygomatic (Cheek) Width': {
@@ -137,25 +154,29 @@ async function handleChange(files, setState) {
     },
     'Bigonial (Jaw) Width': {
       location: (r) => [r.face.landmark.face.face_contour_left_40, r.face.landmark.face.face_contour_right_40],
-      color: 'green'
+      color: 'red'
     },
     'Temporal (Forehead) Width': {
       location: (r) => [r.face.landmark.left_eyebrow.left_eyebrow_5, r.face.landmark.right_eyebrow.right_eyebrow_5],
-      color: 'blue'
+      color: 'red'
+    },
+    'Biocular (Eye) Width': {
+      location: (r) => [r.face.landmark.left_eye.left_eye_0, r.face.landmark.right_eye.right_eye_0],
+      color: 'red'
     },
     'Lower Third': {
       location: (r) => [r.face.landmark.face.face_contour_left_0, r.face.landmark.nose.nose_left_62],
-      color: 'black',
+      color: 'white',
       flared: true
     },
     'Middle Third': {
       location: (r) => [r.face.landmark.nose.nose_left_62, r.face.landmark.nose.nose_midline_10],
-      color: 'green',
+      color: 'white',
       flared: true
     },
     'Upper Third': {
       location: (r) => [r.face.landmark.nose.nose_midline_10, r.face.landmark.face.face_hairline_72],
-      color: 'blue',
+      color: 'white',
       flared: true
     }
   }

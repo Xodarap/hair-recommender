@@ -15,5 +15,7 @@ export default function Instructions() {
         <Typography component="p" variant="body1" align="center" color="textPrimary" gutterBottom>
             Upload a picture of yourself with a neutral expression and facing straight towards the camera for best results
         </Typography>
+
+            {/* Data from Farkas, Leslie G., Marko J. Katic, and Christopher R. Forrest. "International anthropometric study of facial morphology in various ethnic groups/races." Journal of Craniofacial Surgery 16.4 (2005): 615-646. */}
     </Container>)
 }

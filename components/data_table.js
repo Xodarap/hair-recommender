@@ -8,12 +8,22 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Advice from '../components/advice'
 
-export default function DataTable({ locations, classes }) {
+export default function DataTable({ locations, classes, sex }) {
     if (!locations) return <></>;
     const calculateDistance = (row) => {
       const v = ((row.start.x - row.end.x) ** 2 + (row.start.y - row.end.y) ** 2) ** (1 / 2)
       return v
     }
+    /*
+      m: g: 97.1
+         z: 137.1
+         ex: 89.4
+      f: g: 91.1
+         z: 129.9
+         x: 86.8
+    */
+    const ideals = sex == 'male' ? {g: 97.1, z: 137.1, x: 89.4} : {g: 91.1, z: 129.9, x: 86.8}
+
     const distances = locations.reduce((d, row) => {
       d[row.name] = {
         distance: calculateDistance(row),
@@ -25,12 +35,12 @@ export default function DataTable({ locations, classes }) {
     distances['Bigonial (Jaw) Width'].comparison = {
       to: 'Bizygomatic (Cheek) Width',
       relative: distances['Bigonial (Jaw) Width'].distance / distances['Bizygomatic (Cheek) Width'].distance,
-      target: 0.75
+      target: ideals.g / ideals.z
     }
-    distances['Temporal (Forehead) Width'].comparison = {
+    distances['Biocular (Eye) Width'].comparison = {
       to: 'Bizygomatic (Cheek) Width',
       relative: distances['Temporal (Forehead) Width'].distance / distances['Bizygomatic (Cheek) Width'].distance,
-      target: 0.82
+      target: ideals.x / ideals.z
     }
     const thirds = ['Lower', 'Middle', 'Upper']
     const totalHeight = thirds.reduce((ac, r) => ac + distances[r + ' Third'].distance, 0)
@@ -51,12 +61,15 @@ export default function DataTable({ locations, classes }) {
         target: 1.618
       }
     }
-  
+    Object.keys(distances).forEach(k=> {
+      if(!(distances[k].comparison)) return;
+      distances[k].comparison.proportion = distances[k].comparison.relative / distances[k].comparison.target
+    })
     const Comparison = ({ comparison, name }) => {
       if (!comparison) return <></>;
       return <>
         Your {name} is {(comparison.relative * 100).toLocaleString(undefined, { maximumFractionDigits: 0 })}% of
-        your {comparison.to}. The ideal ratio is {comparison.target * 100}%.
+        your {comparison.to}. The ideal ratio is {(comparison.target * 100).toLocaleString(undefined, { maximumFractionDigits: 0 })}%.
       </>
     }
     return <><TableContainer component={Paper}>
@@ -89,6 +102,6 @@ export default function DataTable({ locations, classes }) {
         </TableBody>
       </Table>
     </TableContainer>
-      <Advice distances={distances} />
+      <Advice distances={distances} sex={sex}/>
     </>
   }
