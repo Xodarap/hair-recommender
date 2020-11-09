@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import DataTable from '../components/data_table'
 import Instructions from '../components/instructions'
 import Paper from '@material-ui/core/Paper';
+import Contact from '../components/contact';
 
 const useStyles = makeStyles(theme => ({
   optionalColumn: {
@@ -66,6 +67,7 @@ export default function Home() {
   }
   return (
     <>
+    
       <div className={classes.firstHero}>
         <Typography component="h1" variant="h1" align="center" color="textPrimary" gutterBottom className={classes.whiteText}>
           Hair to Help Us
@@ -101,6 +103,7 @@ export default function Home() {
           <DataTable locations={results.locations} classes={classes} sex={sex}/>
         </Container>
       </div>
+      <Contact/>
     </>
   )
 }
