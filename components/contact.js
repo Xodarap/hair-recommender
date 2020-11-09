@@ -9,22 +9,28 @@ export default function Contact() {
                     <hr className="primary" />
                     <p></p>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                     <Link href="https://www.tiktok.com/@benthamite">
                         <img src="/img/tiktok.svg" style={{ width: '56px', height: '56px' }} />
                         <Typography variant="body1">@benthamite</Typography>
                     </Link>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                     <Link href="mailto:xodarap00@gmail.com">
                         <i className="fas fa-envelope fa-4x" data-wow-delay=".1s" style={{ 'color': 'black' }}></i>
                         <Typography variant="body1">xodarap00@gmail.com</Typography>
                     </Link>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                     <Link href="https://github.com/xodarap">
                         <i className="fab fa-github fa-4x wow bounceIn" data-wow-delay=".1s" style={{ 'color': 'black' }}></i>
                         <Typography variant="body1">Xodarap</Typography>
+                    </Link>
+                </Grid>
+                <Grid item xs={3}>
+                    <Link href="https://linktr.ee/benthamite">
+                        <i className="fas fa-tree fa-4x wow bounceIn" data-wow-delay=".1s" style={{ 'color': 'black' }}></i>
+                        <Typography variant="body1">Linktree</Typography>
                     </Link>
                 </Grid>
             </Grid>
